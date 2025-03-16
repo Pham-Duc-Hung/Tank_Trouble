@@ -1,0 +1,2 @@
+all:
+	g++ -I src/SDL2-2.28.5/x86_64-w64-mingw32/include/SDL2 -I src/SDL2_image-2.6.2/x86_64-w64-mingw32/include/SDL2 -L src/SDL2-2.28.5/x86_64-w64-mingw32/lib -L src/SDL2_image-2.6.2/x86_64-w64-mingw32/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
