@@ -16,6 +16,10 @@ const int SCREEN_WIDTH = 1300;
 const int SCREEN_HEIGHT = 700;
 const string WINDOW_TITLE = "Tank Trouble SDL";
 
+SDL_Texture* tankTexture = NULL;
+int tankX = 500, tankY = 500;
+const int TANK_SIZE = 100; 
+
 struct Wall {
     int x, y, w, h;
 };
@@ -29,13 +33,15 @@ SDL_Texture* loadTexture(const char* path);
 void loadMedia();
 void generateMaze(); // Hàm tạo mê cung ngẫu nhiên
 void renderWalls();
+void removeWallsAroundTank(int tankX, int tankY, int tankSize);
+void renderTank();
 
 int main(int argc, char* argv[]) {
-    srand(time(0)); // Khởi tạo random
+    srand(time(0)); 
     initSDL(window, renderer);
     loadMedia();
-    generateMaze(); // Tạo tường ngẫu nhiên
-
+    generateMaze(); 
+    removeWallsAroundTank(tankX, tankY, TANK_SIZE);
     bool quit = false;
     SDL_Event e;
 
@@ -47,6 +53,7 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
         renderWalls();
+        renderTank();
         SDL_RenderPresent(renderer);
     }
 
@@ -77,6 +84,15 @@ void logSDLError(std::ostream& os, const std::string &msg, bool fatal) {
     }
 }
 
+void quitSDL(SDL_Window* window, SDL_Renderer* renderer) {
+    SDL_DestroyTexture(backgroundTexture);
+    SDL_DestroyTexture(wallHorizontalTexture);
+    SDL_DestroyTexture(wallVerticalTexture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
 SDL_Texture* loadTexture(const char* path) {
     SDL_Texture* newTexture = NULL;
     SDL_Surface* loadedSurface = IMG_Load(path);
@@ -93,16 +109,16 @@ void loadMedia() {
     backgroundTexture = loadTexture("D:/Study/Game Tank/lib/img/background.jpg");
     wallHorizontalTexture = loadTexture("D:/Study/Game Tank/lib/img/hWall.png");
     wallVerticalTexture = loadTexture("D:/Study/Game Tank/lib/img/vWall.png");
-
-    if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture) {
+    tankTexture = loadTexture("D:/Study/Game Tank/lib/img/tank1.png");
+    
+    if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture || !tankTexture) {
         cout << "Lỗi load ảnh!" << endl;
     }
 }
 
-// 🏗 Hàm tạo tường ngẫu nhiên (giống mê cung)
 
 
-// 🎨 Hàm vẽ tường từ danh sách walls
+//  Hàm vẽ tường từ danh sách walls
 void renderWalls() {
     for (const auto& wall : walls) {
         SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
@@ -111,19 +127,22 @@ void renderWalls() {
     }
 }
 
-
+void renderTank(){
+    SDL_Rect tankRect = {tankX - TANK_SIZE / 2, tankY - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
+    SDL_RenderCopy(renderer, tankTexture, NULL, &tankRect);
+}
 
 void generateMaze() {
-    const int CELL_SIZE = 100; // Kích thước ô lưới
+    const int CELL_SIZE = 100; // Chiều dài tường
     const int THICKNESS = 10;  // Độ dày của tường
 
-    // 🟢 **Tạo tường bao viền**
+    //  **Tạo tường bao viền**
     walls.push_back({0, 0, SCREEN_WIDTH, THICKNESS});                      // Tường trên
     walls.push_back({0, SCREEN_HEIGHT - THICKNESS, SCREEN_WIDTH, THICKNESS}); // Tường dưới
     walls.push_back({0, 0, THICKNESS, SCREEN_HEIGHT});                     // Tường trái
     walls.push_back({SCREEN_WIDTH - THICKNESS, 0, THICKNESS, SCREEN_HEIGHT}); // Tường phải
 
-    // 🔀 **Tạo tường bên trong theo dạng mê cung (GIẢM MẬT ĐỘ)**
+    //  **Tạo tường bên trong theo dạng mê cung (GIẢM MẬT ĐỘ)**
     for (int y = THICKNESS; y < SCREEN_HEIGHT - THICKNESS; y += CELL_SIZE) {
         for (int x = THICKNESS; x < SCREEN_WIDTH - THICKNESS; x += CELL_SIZE) {
             int r = rand() % 4; // Tăng số lượng giá trị random để tạo ít tường hơn
@@ -137,13 +156,17 @@ void generateMaze() {
     }
 }
 
+void removeWallsAroundTank(int tankX, int tankY, int tankSize) {
+    vector<Wall> newWalls;
 
+    for (const auto& wall : walls) {
+        SDL_Rect tankRect = {tankX - tankSize / 2, tankY - tankSize / 2, tankSize, tankSize};
+        SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
 
-void quitSDL(SDL_Window* window, SDL_Renderer* renderer) {
-    SDL_DestroyTexture(backgroundTexture);
-    SDL_DestroyTexture(wallHorizontalTexture);
-    SDL_DestroyTexture(wallVerticalTexture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+        if (!SDL_HasIntersection(&tankRect, &wallRect)) {
+            newWalls.push_back(wall); 
+        }
+    }
+
+    walls = newWalls; 
 }
