@@ -17,8 +17,8 @@ const int SCREEN_HEIGHT = 700;
 const string WINDOW_TITLE = "Tank Trouble SDL";
 
 SDL_Texture* tankTexture = NULL;
-int tankX = 500, tankY = 500;
-const int TANK_SIZE = 100; 
+int tankX = 100, tankY = 100;
+const int TANK_SIZE = 30;
 
 struct Wall {
     int x, y, w, h;
@@ -37,10 +37,10 @@ void removeWallsAroundTank(int tankX, int tankY, int tankSize);
 void renderTank();
 
 int main(int argc, char* argv[]) {
-    srand(time(0)); 
+    srand(time(0));
     initSDL(window, renderer);
     loadMedia();
-    generateMaze(); 
+    generateMaze();
     removeWallsAroundTank(tankX, tankY, TANK_SIZE);
     bool quit = false;
     SDL_Event e;
@@ -110,7 +110,7 @@ void loadMedia() {
     wallHorizontalTexture = loadTexture("D:/Study/Game Tank/lib/img/hWall.png");
     wallVerticalTexture = loadTexture("D:/Study/Game Tank/lib/img/vWall.png");
     tankTexture = loadTexture("D:/Study/Game Tank/lib/img/tank1.png");
-    
+
     if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture || !tankTexture) {
         cout << "Lỗi load ảnh!" << endl;
     }
@@ -164,9 +164,9 @@ void removeWallsAroundTank(int tankX, int tankY, int tankSize) {
         SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
 
         if (!SDL_HasIntersection(&tankRect, &wallRect)) {
-            newWalls.push_back(wall); 
+            newWalls.push_back(wall);
         }
     }
 
-    walls = newWalls; 
+    walls = newWalls;
 }
