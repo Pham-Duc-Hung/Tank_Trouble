@@ -12,8 +12,8 @@ SDL_Texture* backgroundTexture = NULL;
 SDL_Texture* wallHorizontalTexture = NULL;
 SDL_Texture* wallVerticalTexture = NULL;
 
-const int SCREEN_WIDTH = 1500;
-const int SCREEN_HEIGHT = 800;
+const int SCREEN_WIDTH = 1300;
+const int SCREEN_HEIGHT = 700;
 const string WINDOW_TITLE = "Tank Trouble SDL";
 
 struct Wall {
