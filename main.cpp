@@ -19,6 +19,7 @@ const string WINDOW_TITLE = "Tank Trouble SDL";
 SDL_Texture* tankTexture = NULL;
 int tankX = 100, tankY = 100;
 const int TANK_SIZE = 30;
+const int TANK_SPEED = 3;
 
 struct Wall {
     int x, y, w, h;
@@ -45,9 +46,40 @@ int main(int argc, char* argv[]) {
     bool quit = false;
     SDL_Event e;
 
+    bool keyW=false, keyA=false, keyS=false, keyD=false;
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) quit = true;
+            else if(e.type == SDL_KEYDOWN || e.type == SDL_KEYUP){
+                bool isPressed = (e.type == SDL_KEYDOWN);
+                switch (e.key.keysym.sym){
+                    case SDLK_w: keyW = isPressed; break;
+                    case SDLK_a: keyA = isPressed; break;
+                    case SDLK_s: keyS = isPressed; break;
+                    case SDLK_d: keyD = isPressed; break;
+                }
+            }
+        }
+        //cập nhật vị trí mới
+        int newX = tankX, newY=tankY;
+        if(keyW) newY-=TANK_SPEED;
+        if(keyA) newX-=TANK_SPEED;
+        if(keyS) newY+=TANK_SPEED;
+        if(keyD) newX+=TANK_SPEED;
+
+        //Check va chạm
+        SDL_Rect newTankRect = {newX - TANK_SIZE/2, newY - TANK_SIZE/2, TANK_SIZE, TANK_SIZE};
+        bool canMove = true;
+        for(const auto& wall: walls){
+            SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
+            if(SDL_HasIntersection(&newTankRect, &wallRect)){
+                canMove = false;
+                break;
+            }
+        }
+        if(canMove){
+            tankX=newX;
+            tankY=newY;
         }
 
         SDL_RenderClear(renderer);
