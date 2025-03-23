@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <cmath>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -19,7 +20,8 @@ const string WINDOW_TITLE = "Tank Trouble SDL";
 SDL_Texture* tankTexture = NULL;
 int tankX = 100, tankY = 100;
 const int TANK_SIZE = 30;
-const int TANK_SPEED = 3;
+const int TANK_SPEED = 2;
+double tankAngle = 0.0;
 
 struct Wall {
     int x, y, w, h;
@@ -36,6 +38,7 @@ void generateMaze(); // Hàm tạo mê cung ngẫu nhiên
 void renderWalls();
 void removeWallsAroundTank(int tankX, int tankY, int tankSize);
 void renderTank();
+bool notCollision(int newX, int newY);
 
 int main(int argc, char* argv[]) {
     srand(time(0));
@@ -60,27 +63,35 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-        //cập nhật vị trí mới
-        int newX = tankX, newY=tankY;
-        if(keyW) newY-=TANK_SPEED;
-        if(keyA) newX-=TANK_SPEED;
-        if(keyS) newY+=TANK_SPEED;
-        if(keyD) newX+=TANK_SPEED;
 
-        //Check va chạm
-        SDL_Rect newTankRect = {newX - TANK_SIZE/2, newY - TANK_SIZE/2, TANK_SIZE, TANK_SIZE};
-        bool canMove = true;
-        for(const auto& wall: walls){
-            SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
-            if(SDL_HasIntersection(&newTankRect, &wallRect)){
-                canMove = false;
-                break;
-            }
+        int newX = tankX, newY = tankY;
+
+        // Cập nhật vị trí theo hướng di chuyển
+        if (keyW) newY -= TANK_SPEED;
+        if (keyA) newX -= TANK_SPEED;
+        if (keyS) newY += TANK_SPEED;
+        if (keyD) newX += TANK_SPEED;
+
+        // Kiểm tra va chạm trước khi cập nhật vị trí
+        if (notCollision(newX, newY)) {
+            tankX = newX;
+            tankY = newY;
         }
-        if(canMove){
-            tankX=newX;
-            tankY=newY;
+        // Xác định góc quay của xe tăng theo 8 hướng
+        if (keyW && !keyS) {
+            if (keyA && !keyD) tankAngle = 315;
+            else if (keyD && !keyA) tankAngle = 45;
+            else tankAngle = 0;
         }
+        else if (keyS && !keyW) {
+            if (keyA && !keyD) tankAngle = 225;
+            else if (keyD && !keyA) tankAngle = 135;
+            else tankAngle = 180;
+        }
+        else if (keyA && !keyD) tankAngle = 270;
+        else if (keyD && !keyA) tankAngle = 90;
+
+
 
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
@@ -88,7 +99,6 @@ int main(int argc, char* argv[]) {
         renderTank();
         SDL_RenderPresent(renderer);
     }
-
     quitSDL(window, renderer);
     return 0;
 }
@@ -161,7 +171,8 @@ void renderWalls() {
 
 void renderTank(){
     SDL_Rect tankRect = {tankX - TANK_SIZE / 2, tankY - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
-    SDL_RenderCopy(renderer, tankTexture, NULL, &tankRect);
+    SDL_Point center = {TANK_SIZE / 2, TANK_SIZE / 2};
+    SDL_RenderCopyEx(renderer, tankTexture, NULL, &tankRect, tankAngle, &center, SDL_FLIP_NONE);
 }
 
 void generateMaze() {
@@ -201,4 +212,17 @@ void removeWallsAroundTank(int tankX, int tankY, int tankSize) {
     }
 
     walls = newWalls;
+}
+
+bool notCollision(int newX, int newY){
+    SDL_Rect newTankRect = {newX - TANK_SIZE/2, newY - TANK_SIZE/2, TANK_SIZE, TANK_SIZE};
+    bool canMove = true;
+    for(const auto& wall: walls){
+        SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
+        if(SDL_HasIntersection(&newTankRect, &wallRect)){
+            canMove = false;
+            break;
+        }
+    }
+    return canMove;
 }
