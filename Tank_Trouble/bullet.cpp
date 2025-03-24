@@ -23,7 +23,7 @@ void shootBullet(){ ///tạo mảng đạn đợi
     else standardization = 135;
     double radian = standardization * M_PI / 180.0;
     double bulletX = tankX + cos(radian) * TANK_SIZE /2;
-    double bulletY = tankY + sin(radian) * TANK_SIZE /2;
+    double bulletY = tankY - sin(radian) * TANK_SIZE /2;
     Bullet newBullet = {bulletX, bulletY, tankAngle, SDL_GetTicks()};
     bullets.push_back(newBullet);
 }
