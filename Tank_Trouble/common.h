@@ -27,6 +27,8 @@ extern const int TANK_SIZE;
 extern const int TANK_SPEED;
 extern const int BULLET_SIZE;
 extern double tankAngle;
+extern const int CELL_SIZE; /// Chiều dài tường
+extern const int THICKNESS;  /// Độ dày của tường
 
 struct Wall {
     int x, y, w, h;

@@ -13,24 +13,48 @@ void renderBullet(){
 
 void shootBullet(){ ///tạo mảng đạn đợi
     int standardization;
-    if (tankAngle == 0) standardization = 90;
-    else if (tankAngle == 45) standardization = 45;
-    else if (tankAngle == 90) standardization = 0;
-    else if (tankAngle == 135) standardization = 315;
-    else if (tankAngle == 180) standardization = 270;
-    else if (tankAngle == 225) standardization = 225;
-    else if (tankAngle == 270) standardization = 180;
-    else standardization = 135;
-    double radian = standardization * M_PI / 180.0;
+    standardization = - (tankAngle - 90);
+    if (standardization < 0) standardization = 360 + standardization;
+    double radian =  standardization * M_PI / 180.0;
     double bulletX = tankX + cos(radian) * TANK_SIZE /2;
     double bulletY = tankY - sin(radian) * TANK_SIZE /2;
     Bullet newBullet = {bulletX, bulletY, tankAngle, SDL_GetTicks()};
     bullets.push_back(newBullet);
 }
+bool bulletHitTheWall(double x, double y) {
+    for (Wall& wall : walls) {
+        SDL_Rect bulletRect = {(int) x - BULLET_SIZE / 2, (int) y - BULLET_SIZE / 2, BULLET_SIZE, BULLET_SIZE};
+        SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
+        if(SDL_HasIntersection(&bulletRect, &wallRect)){
+            return true;
+        }
+    }
+    return false;
+}
+void flipBulletH(double &angle) {
+    if (angle > 180) angle = -angle + 540;
+    else angle = -angle + 180;
+}
 
+/// Đảo góc khi va vào tường dọc
+void flipBulletV(double &angle) {
+    angle = -angle + 360;
+}
 
-
-
+/// Kiểm tra trục của tường
+bool isVerticalWall(double x, double y) {
+    for (Wall& wall : walls) {
+        SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
+        SDL_Rect bulletRect = {(int) x, (int) y, BULLET_SIZE, BULLET_SIZE};
+        if(SDL_HasIntersection(&wallRect, &bulletRect)){
+            if(wall.w == 10){
+                if(y + BULLET_SIZE / 2 > wall.y) return true;
+            }
+            else if(x + 1 <= wall.x || x - 1 >= wall.x + CELL_SIZE) return true;
+        }
+    }
+    return false;
+}
 
 
 
@@ -50,5 +74,17 @@ void updateBullets() {
             case 270: bullet.x -= BULLET_SPEED; break; /// Trái
             case 315: bullet.x -= BULLET_SPEED; bullet.y -= BULLET_SPEED; break; /// Lên trái
         }
+        /// Kiểm tra va chạm với tường
+        if (bulletHitTheWall(bullet.x, bullet.y)) {
+            if (isVerticalWall(bullet.x, bullet.y)) {
+                flipBulletV(bullet.angle);
+            } else flipBulletH(bullet.angle);
+        }
+
+        /// Kiểm tra nếu đạn chưa hết thời gian thì giữ lại
+        if (currentTime - bullet.spawntime < BULLET_LIFETIME) {
+            newBullets.push_back(bullet);
+        }
     }
+    bullets = newBullets;
 }

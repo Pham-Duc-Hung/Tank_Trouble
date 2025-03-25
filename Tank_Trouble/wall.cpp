@@ -1,8 +1,9 @@
 #include "wall.h"
 
+const int CELL_SIZE = 100; /// Chiều dài tường
+const int THICKNESS = 10;  /// Độ dày của tường
 void generateMaze() {
-    const int CELL_SIZE = 100; /// Chiều dài tường
-    const int THICKNESS = 10;  /// Độ dày của tường
+    
 
     ///  **Tạo tường bao viền**
     walls.push_back({0, 0, SCREEN_WIDTH, THICKNESS});                      /// Tường trên

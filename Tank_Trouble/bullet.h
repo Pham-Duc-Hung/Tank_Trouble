@@ -6,5 +6,8 @@
 void renderBullet();
 void shootBullet();
 void updateBullets();
-
+void flipBulletH(double &angle);
+void flipBulletV(double &angle);
+bool isVerticalWall(double x, double y);
+bool bulletHitTheWall(double x, double y);
 #endif // BULLET_H
