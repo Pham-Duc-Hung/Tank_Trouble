@@ -7,11 +7,17 @@ const int TANK_SPEED = 2;
 vector<Wall> walls;
 vector<Bullet> bullets;
 /// vẽ tank
-void renderTank(const Tank& tank) {
+void renderTank(const Tank& tank, SDL_Texture* texture) {
     SDL_Rect tankRect = {tank.x - TANK_SIZE / 2, tank.y - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
-    SDL_Point center = {TANK_SIZE / 2, TANK_SIZE / 2};
-    SDL_RenderCopyEx(renderer, tankTexture, NULL, &tankRect, tank.tankAngle, &center, SDL_FLIP_NONE);
+
+    if (tank.exploded) {
+        SDL_RenderCopy(renderer, explosionTexture, NULL, &tankRect); // hiện ảnh nổ
+    } else {
+        SDL_Point center = {TANK_SIZE / 2, TANK_SIZE / 2};
+        SDL_RenderCopyEx(renderer, texture, NULL, &tankRect, tank.tankAngle, &center, SDL_FLIP_NONE);
+    }
 }
+
 
 void removeWallsAroundTank(const Tank& tank) {
     vector<Wall> newWalls;
@@ -41,6 +47,7 @@ bool notCollision(int newX, int newY){ ///không thể di chuyển xuyên tườ
 }
 
 void handleTankMovement(Tank& tank, bool up, bool down, bool left, bool right) {
+    if (tank.exploded) return;
     int newX = tank.x;
     int newY = tank.y;
 

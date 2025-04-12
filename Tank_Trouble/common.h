@@ -7,7 +7,6 @@
 #include <cmath>
 #include <SDL.h>
 #include <SDL_image.h>
-
 using namespace std;
 
 extern SDL_Window* window;
@@ -15,8 +14,10 @@ extern SDL_Renderer* renderer;
 extern SDL_Texture* backgroundTexture;
 extern SDL_Texture* wallHorizontalTexture;
 extern SDL_Texture* wallVerticalTexture;
-extern SDL_Texture* tankTexture;
+extern SDL_Texture* tank1Texture;
+extern SDL_Texture* tank2Texture;
 extern SDL_Texture* bulletTexture;
+extern SDL_Texture* explosionTexture;
 
 const int SCREEN_WIDTH = 1300;
 const int SCREEN_HEIGHT = 700;
@@ -39,7 +40,7 @@ struct Bullet {
 struct Tank {
     int x, y;
     double tankAngle;
-
+    bool exploded = false;
 };
 extern vector<Wall> walls;
 extern vector<Bullet> bullets;

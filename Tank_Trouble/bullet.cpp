@@ -12,12 +12,13 @@ void renderBullet(){
 }
 
 void shootBullet(const Tank& tank){ ///tạo mảng đạn đợi
+    if (tank.exploded) return;
     int standardization;
     standardization = - (tank.tankAngle - 90);
     if (standardization < 0) standardization = 360 + standardization;
     double radian =  standardization * M_PI / 180.0;
-    double bulletX = tank.x + cos(radian) * TANK_SIZE /2;
-    double bulletY = tank.y - sin(radian) * TANK_SIZE /2;
+    double bulletX = tank.x + cos(radian) * (TANK_SIZE /2 + 9);
+    double bulletY = tank.y - sin(radian) * (TANK_SIZE /2 + 9);
     Bullet newBullet = {bulletX, bulletY, tank.tankAngle, SDL_GetTicks()};
     bullets.push_back(newBullet);
 }
@@ -87,3 +88,21 @@ void updateBullets() {
 }
 
 
+void checkBulletTankCollision(Tank& tank) {
+    if (tank.exploded) return;
+
+    SDL_Rect tankRect = {tank.x - TANK_SIZE / 2, tank.y - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
+
+    for (auto it = bullets.begin(); it != bullets.end(); ) {
+    SDL_Rect bulletRect = {(int)it->x - BULLET_SIZE / 2, (int)it->y - BULLET_SIZE / 2, BULLET_SIZE, BULLET_SIZE};
+
+    if (SDL_HasIntersection(&tankRect, &bulletRect)) {
+        tank.exploded = true;
+        it = bullets.erase(it); // Xoá đạn rồi tiếp tục vòng lặp
+        break; // Chỉ xử lý 1 viên đạn trúng
+    } else {
+        ++it;
+    }
+}
+
+}

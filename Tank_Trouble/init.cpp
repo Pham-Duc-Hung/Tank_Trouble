@@ -5,8 +5,10 @@ SDL_Renderer* renderer = NULL;
 SDL_Texture* backgroundTexture = NULL;
 SDL_Texture* wallHorizontalTexture = NULL;
 SDL_Texture* wallVerticalTexture = NULL;
-SDL_Texture* tankTexture = NULL;
+SDL_Texture* tank1Texture = NULL;
+SDL_Texture* tank2Texture = NULL;
 SDL_Texture* bulletTexture = NULL;
+SDL_Texture* explosionTexture = NULL;
 
 void initSDL(SDL_Window* &window, SDL_Renderer* &renderer) { ///khởi tạo cửa sổ + bút vẽ
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) { /// khởi động tất cả module của SDL, nếu khởi tạo được thì ==0
@@ -35,7 +37,8 @@ void quitSDL(SDL_Window* window, SDL_Renderer* renderer) {///xóa tất cả r�
     SDL_DestroyTexture(backgroundTexture);
     SDL_DestroyTexture(wallHorizontalTexture);
     SDL_DestroyTexture(wallVerticalTexture);
-    SDL_DestroyTexture(tankTexture);
+    SDL_DestroyTexture(tank1Texture);
+    SDL_DestroyTexture(tank2Texture);
     SDL_DestroyTexture(bulletTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -58,10 +61,12 @@ void loadMedia() { /// load ảnh
     backgroundTexture = loadTexture("D:/Study/Game Tank/lib/img/background.jpg");
     wallHorizontalTexture = loadTexture("D:/Study/Game Tank/lib/img/hWall.png");
     wallVerticalTexture = loadTexture("D:/Study/Game Tank/lib/img/vWall.png");
-    tankTexture = loadTexture("D:/Study/Game Tank/lib/img/tank1.png");
+    tank1Texture = loadTexture("D:/Study/Game Tank/lib/img/tank1.png");
+    tank2Texture = loadTexture("D:/Study/Game Tank/lib/img/tank2.png");
     bulletTexture = loadTexture("D:/Study/Game Tank/lib/img/bullet.png");
+    explosionTexture = loadTexture("D:/Study/Game Tank/lib/img/explosion.png");
 
-    if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture || !tankTexture) {
+    if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture || !tank1Texture || !tank2Texture || !explosionTexture) {
         cout << "Lỗi load ảnh!" << endl;
     }
 }

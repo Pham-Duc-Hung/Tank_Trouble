@@ -49,13 +49,15 @@ int main(int argc, char* argv[]) {
         handleTankMovement(player2, keyUp, keyDown, keyLeft, keyRight);
         updateTankAngle(player2, keyUp, keyDown, keyLeft, keyRight);
         updateBullets();
+        checkBulletTankCollision(player1);
+        checkBulletTankCollision(player2);
 
         // Vẽ lại mọi thứ
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
         renderWalls();
-        renderTank(player1); // Vẽ Tank 1
-        renderTank(player2); // Vẽ Tank 2
+        renderTank(player1, tank1Texture); // Vẽ Tank 1
+        renderTank(player2, tank2Texture); // Vẽ Tank 2
         renderBullet();
         SDL_RenderPresent(renderer);
     }

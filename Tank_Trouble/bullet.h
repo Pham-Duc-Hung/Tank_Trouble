@@ -10,4 +10,5 @@ void flipBulletH(double &angle);
 void flipBulletV(double &angle);
 bool isVerticalWall(double x, double y);
 bool bulletHitTheWall(double x, double y);
+void checkBulletTankCollision(Tank& tank);
 #endif // BULLET_H
