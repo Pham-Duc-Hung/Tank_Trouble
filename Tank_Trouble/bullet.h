@@ -4,7 +4,7 @@
 #include "common.h"
 
 void renderBullet();
-void shootBullet();
+void shootBullet(const Tank& tank);
 void updateBullets();
 void flipBulletH(double &angle);
 void flipBulletV(double &angle);

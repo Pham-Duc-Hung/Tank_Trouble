@@ -1,26 +1,24 @@
 #include "tank.h"
 
-int tankX = 100, tankY = 100;
 const int TANK_SIZE = 30;
 const int TANK_SPEED = 2;
-double tankAngle = 0.0;
 
 
 vector<Wall> walls;
 vector<Bullet> bullets;
 /// vẽ tank
-void renderTank(){
-    SDL_Rect tankRect = {tankX - TANK_SIZE / 2, tankY - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
+void renderTank(const Tank& tank) {
+    SDL_Rect tankRect = {tank.x - TANK_SIZE / 2, tank.y - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
     SDL_Point center = {TANK_SIZE / 2, TANK_SIZE / 2};
-    SDL_RenderCopyEx(renderer, tankTexture, NULL, &tankRect, tankAngle, &center, SDL_FLIP_NONE);///vẽ hình có thể xoay
+    SDL_RenderCopyEx(renderer, tankTexture, NULL, &tankRect, tank.tankAngle, &center, SDL_FLIP_NONE);
 }
-void removeWallsAroundTank(int tankX, int tankY, int tankSize) { ///Xóa tường quanh điểm khởi đầu của tank khỏi trùng
+
+void removeWallsAroundTank(const Tank& tank) {
     vector<Wall> newWalls;
 
+    SDL_Rect tankRect = {tank.x - TANK_SIZE / 2, tank.y - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
     for (const auto& wall : walls) {
-        SDL_Rect tankRect = {tankX - tankSize / 2, tankY - tankSize / 2, tankSize, tankSize};
         SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
-
         if (!SDL_HasIntersection(&tankRect, &wallRect)) {
             newWalls.push_back(wall);
         }
@@ -28,6 +26,7 @@ void removeWallsAroundTank(int tankX, int tankY, int tankSize) { ///Xóa tườn
 
     walls = newWalls;
 }
+
 bool notCollision(int newX, int newY){ ///không thể di chuyển xuyên tường
     SDL_Rect newTankRect = {newX - TANK_SIZE/2, newY - TANK_SIZE/2, TANK_SIZE, TANK_SIZE};
     bool canMove = true;
@@ -40,3 +39,34 @@ bool notCollision(int newX, int newY){ ///không thể di chuyển xuyên tườ
     }
     return canMove;
 }
+
+void handleTankMovement(Tank& tank, bool up, bool down, bool left, bool right) {
+    int newX = tank.x;
+    int newY = tank.y;
+
+    if (up) newY -= TANK_SPEED;
+    if (down) newY += TANK_SPEED;
+    if (left) newX -= TANK_SPEED;
+    if (right) newX += TANK_SPEED;
+
+    if (notCollision(newX, newY)) {
+        tank.x = newX;
+        tank.y = newY;
+    }
+}
+
+void updateTankAngle(Tank& tank, bool up, bool down, bool left, bool right) {
+    if (up && !down) {
+        if (left && !right) tank.tankAngle = 315;
+        else if (right && !left) tank.tankAngle = 45;
+        else tank.tankAngle = 0;
+    }
+    else if (down && !up) {
+        if (left && !right) tank.tankAngle = 225;
+        else if (right && !left) tank.tankAngle = 135;
+        else tank.tankAngle = 180;
+    }
+    else if (left && !right) tank.tankAngle = 270;
+    else if (right && !left) tank.tankAngle = 90;
+}
+

@@ -1,6 +1,6 @@
 #include "bullet.h"
 
-const int BULLET_SPEED = 4;
+const int BULLET_SPEED = 3;
 const Uint32 BULLET_LIFETIME = 3000;
 const int BULLET_SIZE = 4;
 
@@ -11,14 +11,14 @@ void renderBullet(){
     }
 }
 
-void shootBullet(){ ///tạo mảng đạn đợi
+void shootBullet(const Tank& tank){ ///tạo mảng đạn đợi
     int standardization;
-    standardization = - (tankAngle - 90);
+    standardization = - (tank.tankAngle - 90);
     if (standardization < 0) standardization = 360 + standardization;
     double radian =  standardization * M_PI / 180.0;
-    double bulletX = tankX + cos(radian) * TANK_SIZE /2;
-    double bulletY = tankY - sin(radian) * TANK_SIZE /2;
-    Bullet newBullet = {bulletX, bulletY, tankAngle, SDL_GetTicks()};
+    double bulletX = tank.x + cos(radian) * TANK_SIZE /2;
+    double bulletY = tank.y - sin(radian) * TANK_SIZE /2;
+    Bullet newBullet = {bulletX, bulletY, tank.tankAngle, SDL_GetTicks()};
     bullets.push_back(newBullet);
 }
 bool bulletHitTheWall(double x, double y) {
@@ -43,20 +43,17 @@ void flipBulletV(double &angle) {
 
 /// Kiểm tra trục của tường
 bool isVerticalWall(double x, double y) {
+    SDL_Rect bulletRect = {(int)x - BULLET_SIZE / 2, (int)y - BULLET_SIZE / 2, BULLET_SIZE, BULLET_SIZE};
+
     for (Wall& wall : walls) {
         SDL_Rect wallRect = {wall.x, wall.y, wall.w, wall.h};
-        SDL_Rect bulletRect = {(int) x, (int) y, BULLET_SIZE, BULLET_SIZE};
-        if(SDL_HasIntersection(&wallRect, &bulletRect)){
-            if(wall.w == 10){
-                if(y + BULLET_SIZE / 2 > wall.y) return true;
-            }
-            else if(x + 1 <= wall.x || x - 1 >= wall.x + CELL_SIZE) return true;
+        if (SDL_HasIntersection(&bulletRect, &wallRect)) {
+            if (wall.w == 4) return true;
+            else return false;
         }
     }
     return false;
 }
-
-
 
 void updateBullets() {
     Uint32 currentTime = SDL_GetTicks();
@@ -88,3 +85,5 @@ void updateBullets() {
     }
     bullets = newBullets;
 }
+
+
