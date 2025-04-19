@@ -3,14 +3,14 @@
 #include "tank.h"
 #include "wall.h"
 #include "bullet.h"
-
+#include "buff.h"
 int main(int argc, char* argv[]) {
     srand(time(0));
     initSDL(window, renderer);
     loadMedia();
     generateMaze();
-    Tank player1 = {100, 100, 0.0};
-    Tank player2 = {1100, 600, 180.0};
+    Tank player1 = {100, 100, 0.0, false, 2, 0};
+    Tank player2 = {1100, 600, 180.0, false, 2, 0};
     removeWallsAroundTank(player1);
     removeWallsAroundTank(player2);
     bool quit = false;
@@ -45,20 +45,26 @@ int main(int argc, char* argv[]) {
         }
         handleTankMovement(player1, keyW, keyS, keyA, keyD);
         updateTankAngle(player1, keyW, keyS, keyA, keyD);
-
         handleTankMovement(player2, keyUp, keyDown, keyLeft, keyRight);
         updateTankAngle(player2, keyUp, keyDown, keyLeft, keyRight);
         updateBullets();
         checkBulletTankCollision(player1);
         checkBulletTankCollision(player2);
 
+
         // Vẽ lại mọi thứ
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
         renderWalls();
         renderTank(player1, tank1Texture); // Vẽ Tank 1
+        renderLives(player1, true);
         renderTank(player2, tank2Texture); // Vẽ Tank 2
+        renderLives(player2, false);
         renderBullet();
+        spawnHeartBuff();
+        renderHeartBuff(heartBuffTexture);
+        checkTankCollectBuff(player1);
+        checkTankCollectBuff(player2);
         SDL_RenderPresent(renderer);
     }
 

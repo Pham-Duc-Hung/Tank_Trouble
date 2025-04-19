@@ -2,6 +2,9 @@
 
 const int TANK_SIZE = 30;
 const int TANK_SPEED = 2;
+const int HEART_SIZE = 30;
+const int HEART_DISTANCE = 10;
+const int HEART_MARGIN = 20;
 
 
 vector<Wall> walls;
@@ -10,6 +13,11 @@ vector<Bullet> bullets;
 void renderTank(const Tank& tank, SDL_Texture* texture) {
     SDL_Rect tankRect = {tank.x - TANK_SIZE / 2, tank.y - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
 
+    Uint32 now = SDL_GetTicks();
+
+    if(now < tank.invincibleUntil){
+        if((now / 200) % 2 == 0) return;
+    }
     if (tank.exploded) {
         SDL_RenderCopy(renderer, explosionTexture, NULL, &tankRect); // hiện ảnh nổ
     } else {
@@ -18,6 +26,22 @@ void renderTank(const Tank& tank, SDL_Texture* texture) {
     }
 }
 
+void renderLives(const Tank& tank, bool isPlayer1){
+    for(int i = 0; i < tank.lives; i++){
+        SDL_Rect heartRect;
+
+        if(isPlayer1){
+            heartRect.x = HEART_DISTANCE + i * (HEART_SIZE + HEART_DISTANCE);
+        }
+        else heartRect.x = 1300 - (i + 1) * (HEART_SIZE + HEART_DISTANCE);
+
+        heartRect.y = 700 - HEART_SIZE - HEART_MARGIN;
+        heartRect.w = HEART_SIZE;
+        heartRect.h = HEART_SIZE;
+
+        SDL_RenderCopy(renderer, heartTexture, NULL, &heartRect);
+    }
+}
 
 void removeWallsAroundTank(const Tank& tank) {
     vector<Wall> newWalls;
@@ -76,4 +100,5 @@ void updateTankAngle(Tank& tank, bool up, bool down, bool left, bool right) {
     else if (left && !right) tank.tankAngle = 270;
     else if (right && !left) tank.tankAngle = 90;
 }
+
 

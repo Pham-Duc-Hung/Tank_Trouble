@@ -9,6 +9,8 @@ SDL_Texture* tank1Texture = NULL;
 SDL_Texture* tank2Texture = NULL;
 SDL_Texture* bulletTexture = NULL;
 SDL_Texture* explosionTexture = NULL;
+SDL_Texture* heartTexture = NULL;
+SDL_Texture* heartBuffTexture = NULL;
 
 void initSDL(SDL_Window* &window, SDL_Renderer* &renderer) { ///khởi tạo cửa sổ + bút vẽ
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) { /// khởi động tất cả module của SDL, nếu khởi tạo được thì ==0
@@ -65,8 +67,10 @@ void loadMedia() { /// load ảnh
     tank2Texture = loadTexture("D:/Study/Game Tank/lib/img/tank2.png");
     bulletTexture = loadTexture("D:/Study/Game Tank/lib/img/bullet.png");
     explosionTexture = loadTexture("D:/Study/Game Tank/lib/img/explosion.png");
+    heartTexture = loadTexture("D:/Study/Game Tank/lib/img/heart.png");
+    heartBuffTexture = loadTexture("D:/Study/Game Tank/lib/img/heartBuff.png");
 
-    if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture || !tank1Texture || !tank2Texture || !explosionTexture) {
+    if (!backgroundTexture || !wallHorizontalTexture || !wallVerticalTexture || !tank1Texture || !tank2Texture || !explosionTexture || !heartTexture || !heartBuffTexture) {
         cout << "Lỗi load ảnh!" << endl;
     }
 }

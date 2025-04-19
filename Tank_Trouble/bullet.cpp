@@ -91,14 +91,23 @@ void updateBullets() {
 void checkBulletTankCollision(Tank& tank) {
     if (tank.exploded) return;
 
+    Uint32 now = SDL_GetTicks();
+
+    if(now < tank.invincibleUntil) return;
     SDL_Rect tankRect = {tank.x - TANK_SIZE / 2, tank.y - TANK_SIZE / 2, TANK_SIZE, TANK_SIZE};
 
     for (auto it = bullets.begin(); it != bullets.end(); ) {
     SDL_Rect bulletRect = {(int)it->x - BULLET_SIZE / 2, (int)it->y - BULLET_SIZE / 2, BULLET_SIZE, BULLET_SIZE};
 
     if (SDL_HasIntersection(&tankRect, &bulletRect)) {
-        tank.exploded = true;
-        it = bullets.erase(it); // Xoá đạn rồi tiếp tục vòng lặp
+        tank.lives--;
+        it = bullets.erase(it);
+        if(tank.lives <= 0){
+            tank.exploded = true;
+        }
+        else{
+            tank.invincibleUntil = now + 2000;
+        }
         break; // Chỉ xử lý 1 viên đạn trúng
     } else {
         ++it;

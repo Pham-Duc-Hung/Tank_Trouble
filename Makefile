@@ -1,2 +1,2 @@
 all:
-	g++ -I src/SDL2-2.28.5/x86_64-w64-mingw32/include/SDL2 -I src/SDL2_image-2.6.2/x86_64-w64-mingw32/include/SDL2 -L src/SDL2-2.28.5/x86_64-w64-mingw32/lib -L src/SDL2_image-2.6.2/x86_64-w64-mingw32/lib -o main Tank_Trouble/main.cpp Tank_Trouble/bullet.cpp Tank_Trouble/init.cpp Tank_Trouble/tank.cpp Tank_Trouble/wall.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+	g++ -I src/SDL2-2.28.5/x86_64-w64-mingw32/include/SDL2 -I src/SDL2_image-2.6.2/x86_64-w64-mingw32/include/SDL2 -L src/SDL2-2.28.5/x86_64-w64-mingw32/lib -L src/SDL2_image-2.6.2/x86_64-w64-mingw32/lib -o main Tank_Trouble/main.cpp Tank_Trouble/bullet.cpp Tank_Trouble/init.cpp Tank_Trouble/tank.cpp Tank_Trouble/wall.cpp Tank_Trouble/buff.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
